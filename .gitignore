@@ -19,3 +19,4 @@ others/
 *.txt
 *.sh
 
+.vscode/

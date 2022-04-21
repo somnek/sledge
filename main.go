@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	p := tea.NewProgram(initialModel())
+	p := tea.NewProgram(initialModel(true))
 	if err := p.Start(); err != nil {
 		fmt.Printf("skull :%v", err)
 		os.Exit(1)

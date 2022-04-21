@@ -2,22 +2,38 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/muesli/termenv"
+)
+
+var (
+	term = termenv.EnvColorProfile()
 )
 
 type model struct {
-	choices  []string         // item on list
-	cursor   int              // which item cursor is pointing at
-	selected map[int]struct{} // which one is selected
+	choices   []string         // item on list
+	cursor    int              // which item cursor is pointing at
+	selected  map[int]struct{} // which one is selected
+	statusBar string
 }
 
-func initialModel() model {
+func initialModel(firstRun bool) model {
 	rdb := connect()
 	keys := rdb.getKeys()
+
+	statusBar := "\n"
+	if firstRun == false {
+		// current time
+		currentTime := time.Now().Format("2006-01-02 15:04:05")
+		statusBar = fmt.Sprintf("\nlast refresh: \033[1;32m%v\033[0m", currentTime)
+	}
+
 	return model{
-		choices:  keys,
-		selected: make(map[int]struct{}),
+		choices:   keys,
+		selected:  make(map[int]struct{}),
+		statusBar: statusBar,
 	}
 }
 
@@ -51,25 +67,30 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.selected[m.cursor] = struct{}{}
 			}
-		case "r": // refresh redis
-			return initialModel(), nil
+		case "r":
+			firstRun := false
+			return initialModel(firstRun), nil
 		}
 	}
 	return m, nil
 }
 
+func colorFg(val, color string) string {
+	return termenv.String(val).Foreground(term.Color(color)).String()
+}
+
 func (m model) View() string {
 	s := "Just choose:\n\n"
 
-	// s := fmt.Sprintf("Selected: %s\n\n", m.selected)
 	for i, choice := range m.choices {
 		cursor := " "
 		if m.cursor == i {
 			cursor = ">"
+			choice = colorFg(choice, "66")
 		}
 		checked := " "
 		if _, ok := m.selected[i]; ok {
-			checked = "x"
+			checked = colorFg("x", "79")
 		}
 
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
@@ -78,7 +99,8 @@ func (m model) View() string {
 	rdb := connect()
 	currentValue := rdb.get(m.choices[m.cursor])
 
-	// display text in pink color
-	s += fmt.Sprintf("\nvalue: \033[1;35m%s\033[0m", currentValue)
+	footer := fmt.Sprintf("\nvalue: \033[1;35m%s\033[0m", currentValue)
+	s += footer
+	s += m.statusBar
 	return s
 }
