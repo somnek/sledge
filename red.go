@@ -29,6 +29,12 @@ func (s *Store) add(key string, val string) {
 	}
 }
 
+func (s *Store) del(key string) {
+	if err := s.rdb.Del(s.ctx, key).Err(); err != nil {
+		panic(err)
+	}
+}
+
 func (s *Store) exists(key string) int64 {
 	return s.rdb.Exists(s.ctx, key).Val()
 }

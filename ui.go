@@ -5,29 +5,43 @@ import (
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
+
 	"github.com/muesli/termenv"
 )
 
 var (
-	term = termenv.EnvColorProfile()
+	term  = termenv.EnvColorProfile()
+	style = lipgloss.NewStyle().
+		Width(50).
+		Border(lipgloss.RoundedBorder())
 )
 
 type model struct {
-	choices   []string         // item on list
-	cursor    int              // which item cursor is pointing at
-	selected  map[int]struct{} // which one is selected
-	statusBar string
+	choices    []string         // item on list
+	cursor     int              // which item cursor is pointing at
+	selected   map[int]struct{} // which one is selected
+	statusBar  string
+	actionMenu string
+	testText   string
 }
 
-func initialModel(firstRun bool) model {
+func initialModel(isRefresh bool, curPos int) model {
 	rdb := connect()
 	keys := rdb.getKeys()
 
 	statusBar := "\n"
-	if firstRun == false {
+	if isRefresh {
 		// current time
 		currentTime := time.Now().Format("2006-01-02 15:04:05")
 		statusBar = fmt.Sprintf("\nlast refresh: \033[1;32m%v\033[0m", currentTime)
+
+		return model{
+			choices:   keys,
+			cursor:    curPos,
+			selected:  make(map[int]struct{}),
+			statusBar: statusBar,
+		}
 	}
 
 	return model{
@@ -46,7 +60,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
-		case "ctrl+c", "q":
+		case "ctrl+c", "q", "esc":
 			return m, tea.Quit
 		case "up", "k":
 			if m.cursor > 0 {
@@ -60,6 +74,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else if m.cursor == len(m.choices)-1 {
 				m.cursor = 0
 			}
+		case "d", "x":
+			rdb := connect()
+
+			// there are 2 deletion method
+			// 1. delete those that marked wih 'X'
+			// 2. when no item is marked, delete the current one
+
+			if len(m.selected) > 0 {
+				for k := range m.selected {
+					rdb.del(m.choices[k])
+				}
+				return initialModel(false, 0), nil
+			} else { // none selected
+				rdb.del(m.choices[m.cursor])
+				return initialModel(false, 0), nil
+			}
+
 		case "enter", " ":
 			_, ok := m.selected[m.cursor]
 			if ok {
@@ -68,9 +99,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.selected[m.cursor] = struct{}{}
 			}
 		case "r":
-			firstRun := false
-			return initialModel(firstRun), nil
+			curPos := m.cursor
+			isRefresh := true
+			return initialModel(isRefresh, curPos), nil
+		case "l", "right":
+			// switch db
 		}
+
 	}
 	return m, nil
 }
@@ -80,27 +115,36 @@ func colorFg(val, color string) string {
 }
 
 func (m model) View() string {
-	s := "Just choose:\n\n"
+	// colorFg will return string
+	s := "\n"
 
 	for i, choice := range m.choices {
 		cursor := " "
 		if m.cursor == i {
-			cursor = ">"
-			choice = colorFg(choice, "66")
+			cursor = colorFg(">", "#E0F2E9")
+			choice = colorFg(choice, "#DC965A")
 		}
 		checked := " "
 		if _, ok := m.selected[i]; ok {
-			checked = colorFg("x", "79")
+			checked = colorFg("x", "#ED7B84")
 		}
 
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
 	}
 
 	rdb := connect()
-	currentValue := rdb.get(m.choices[m.cursor])
+	currentValue := "Empty"
+	if len(m.choices) > 0 {
+		currentValue = rdb.get(m.choices[m.cursor])
+	}
+	currentValue = colorFg(currentValue, "#F991CC")
+	instruction := colorFg("\nj:down, k:up, d:del, r:refresh\n", "#8D8D8D")
 
-	footer := fmt.Sprintf("\nvalue: \033[1;35m%s\033[0m", currentValue)
+	footer := style.Render(fmt.Sprintf("value: %s", currentValue))
 	s += footer
 	s += m.statusBar
+	s += instruction
+	s += m.actionMenu
+	s += m.testText
 	return s
 }
