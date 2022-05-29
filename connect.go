@@ -23,11 +23,11 @@ func snakeBite(key string) string {
 	return value
 }
 
-func connect() *Store {
+func connect(db int) *Store {
 	password := snakeBite("password")
 	connection := redis.NewClient(&redis.Options{
 		Addr:     "localhost:6379",
-		DB:       1,
+		DB:       db,
 		Password: password,
 	})
 	// connection := redis.NewClient(&redis.Options{

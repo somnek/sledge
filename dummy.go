@@ -9,7 +9,7 @@ var data = map[string]string{
 }
 
 func dummyIns() {
-	rdb := connect()
+	rdb := connect(0)
 	for key, value := range data {
 		rdb.add(key, value)
 	}

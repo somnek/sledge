@@ -24,10 +24,12 @@ type model struct {
 	statusBar  string
 	actionMenu string
 	testText   string
+	db         int
+	logs       []string
 }
 
-func initialModel(isRefresh bool, curPos int) model {
-	rdb := connect()
+func initialModel(db int, isRefresh bool, curPos int) model {
+	rdb := connect(db)
 	keys := rdb.getKeys()
 
 	statusBar := "\n"
@@ -37,14 +39,16 @@ func initialModel(isRefresh bool, curPos int) model {
 		statusBar = fmt.Sprintf("\nlast refresh: \033[1;32m%v\033[0m", currentTime)
 
 		return model{
+			db:        db,
 			choices:   keys,
 			cursor:    curPos,
 			selected:  make(map[int]struct{}),
 			statusBar: statusBar,
 		}
 	}
-
+	// init (not refresh)
 	return model{
+		db:        db,
 		choices:   keys,
 		selected:  make(map[int]struct{}),
 		statusBar: statusBar,
@@ -75,7 +79,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = 0
 			}
 		case "d", "x":
-			rdb := connect()
+			rdb := connect(m.db)
 
 			// there are 2 deletion method
 			// 1. delete those that marked wih 'X'
@@ -85,12 +89,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				for k := range m.selected {
 					rdb.del(m.choices[k])
 				}
-				return initialModel(false, 0), nil
+				return initialModel(0, false, 0), nil
 			} else { // none selected
 				rdb.del(m.choices[m.cursor])
-				return initialModel(false, 0), nil
+				return initialModel(0, false, 0), nil
 			}
-
 		case "enter", " ":
 			_, ok := m.selected[m.cursor]
 			if ok {
@@ -101,11 +104,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "r":
 			curPos := m.cursor
 			isRefresh := true
-			return initialModel(isRefresh, curPos), nil
-		case "l", "right":
+			return initialModel(m.db, isRefresh, curPos), nil
+		case "l", "right", "h", "left":
 			// switch db
+			if m.db == 0 {
+				m.logs = append(m.logs, "switch to db 1")
+				return initialModel(1, true, 0), nil
+			} else {
+				m.logs = append(m.logs, "switch to db 0")
+				return initialModel(0, true, 0), nil
+			}
 		}
-
 	}
 	return m, nil
 }
@@ -117,12 +126,15 @@ func colorFg(val, color string) string {
 func (m model) View() string {
 	// colorFg will return string
 	s := "\n"
+	s += colorFg("Welcome to red list... 🥥\n", "#f0ead2")
+	s += colorFg("─────────────────────────\n", "#E0F2E9")
 
 	for i, choice := range m.choices {
 		cursor := " "
 		if m.cursor == i {
 			cursor = colorFg(">", "#E0F2E9")
-			choice = colorFg(choice, "#DC965A")
+			// choice = colorFg(choice, "#DC965A")
+			choice = colorFg(choice, "#a98467")
 		}
 		checked := " "
 		if _, ok := m.selected[i]; ok {
@@ -132,19 +144,22 @@ func (m model) View() string {
 		s += fmt.Sprintf("%s [%s] %s\n", cursor, checked, choice)
 	}
 
-	rdb := connect()
+	rdb := connect(m.db)
 	currentValue := "Empty"
 	if len(m.choices) > 0 {
 		currentValue = rdb.get(m.choices[m.cursor])
 	}
-	currentValue = colorFg(currentValue, "#F991CC")
-	instruction := colorFg("\nj:down, k:up, d:del, r:refresh\n", "#8D8D8D")
+	// currentValue = colorFg(currentValue, "#F991CC")
+	currentValue = colorFg(currentValue, "#adc178")
+	instruction := colorFg("\nj:down, k:up, d:del, space:mark, r:refresh\n", "#8D8D8D")
 
 	footer := style.Render(fmt.Sprintf("value: %s", currentValue))
-	s += footer
+	m.logs = append(m.logs, fmt.Sprintf("\nlogs:\ndb: %d", m.db))
 	s += m.statusBar
 	s += instruction
 	s += m.actionMenu
 	s += m.testText
+	s += footer
+	s += glueLogs(&m.logs)
 	return s
 }
