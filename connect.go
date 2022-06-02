@@ -24,20 +24,20 @@ func snakeBite(key string) string {
 }
 
 func connect(db int) *Store {
-	password := snakeBite("password")
-	connection := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		DB:       db,
-		Password: password,
-	})
+	// password := snakeBite("password")
 	// connection := redis.NewClient(&redis.Options{
-	// 	Addr: "localhost:6666",
-	// 	DB:   0,
+	// 	Addr:     "localhost:6379",
+	// 	DB:       db,
+	// 	Password: password,
 	// })
+	connection := redis.NewClient(&redis.Options{
+		Addr: "localhost:6666",
+		DB:   0,
+	})
 
 	rdb := Store{
 		ctx: context.Background(),
-		rdb: connection,
+		rdb: connection, // bad naming
 	}
 
 	return &rdb

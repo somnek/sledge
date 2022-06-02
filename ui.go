@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 
@@ -30,6 +31,12 @@ type model struct {
 
 func initialModel(db int, isRefresh bool, curPos int) model {
 	rdb := connect(db)
+	ctx := context.Background()
+	ping := rdb.rdb.Ping(ctx).Val()
+	if ping != "PONG" {
+		fmt.Printf("error : %v", ping)
+	}
+
 	keys := rdb.getKeys()
 
 	statusBar := "\n"
@@ -108,10 +115,10 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "l", "right", "h", "left":
 			// switch db
 			if m.db == 0 {
-				m.logs = append(m.logs, "switch to db 1")
+				// m.logs = append(m.logs, "switch to db 1")
 				return initialModel(1, true, 0), nil
 			} else {
-				m.logs = append(m.logs, "switch to db 0")
+				// m.logs = append(m.logs, "switch to db 0")
 				return initialModel(0, true, 0), nil
 			}
 		}
