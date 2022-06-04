@@ -9,6 +9,7 @@ import (
 )
 
 func snakeBite(key string) string {
+	// a file name config.env
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig()
