@@ -9,6 +9,7 @@ import (
 	"github.com/charmbracelet/lipgloss"
 
 	"github.com/muesli/termenv"
+	"github.com/tidwall/pretty"
 )
 
 var (
@@ -160,7 +161,13 @@ func (m model) View() string {
 	currentValue = colorFg(currentValue, "#adc178")
 	instruction := colorFg("\nj:down, k:up, d:del, space:mark, r:refresh\n", "#8D8D8D")
 
-	footer := style.Render(fmt.Sprintf("value: %s", currentValue))
+	var footer string
+	if valType(currentValue) == "map" {
+		footer = fmt.Sprintf("%v", string(pretty.Pretty([]byte(currentValue))))
+	} else {
+		footer = style.Render(fmt.Sprintf("value: %v", currentValue))
+	}
+
 	m.logs = append(m.logs, fmt.Sprintf("\nlogs:\ndb: %d", m.db))
 	s += m.statusBar
 	s += instruction
