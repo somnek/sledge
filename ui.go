@@ -116,10 +116,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "l", "right", "h", "left":
 			// switch db
 			if m.db == 0 {
-				// m.logs = append(m.logs, "switch to db 1")
-				return initialModel(1, true, 0), nil
+				if Ping(1) == "PONG" {
+					return initialModel(1, true, 0), nil
+				}
 			} else {
-				// m.logs = append(m.logs, "switch to db 0")
+				// refresh anyeway
 				return initialModel(0, true, 0), nil
 			}
 		}
