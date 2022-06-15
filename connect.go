@@ -8,8 +8,7 @@ import (
 
 func Ping(db int) string {
 	rdb := connect(db)
-	ctx := context.Background()
-	err := rdb.rdb.Ping(ctx)
+	err := rdb.rdb.Ping(context.Background()).Err()
 	if err != nil {
 		return "PENG"
 	}

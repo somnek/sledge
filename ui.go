@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"fmt"
 	"time"
 
@@ -32,12 +31,6 @@ type model struct {
 
 func initialModel(db int, isRefresh bool, curPos int) model {
 	rdb := connect(db)
-	ctx := context.Background()
-	ping := rdb.rdb.Ping(ctx).Val()
-	if ping != "PONG" {
-		fmt.Printf("error : %v", ping)
-	}
-
 	keys := rdb.getKeys()
 
 	statusBar := "\n"
