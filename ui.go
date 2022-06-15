@@ -82,18 +82,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "d", "x":
 			rdb := connect(m.db)
 
-			// there are 2 deletion method
-			// 1. delete those that marked wih 'X'
-			// 2. when no item is marked, delete the current one
+			// deletion methods
+			// - delete those that marked wih 'X'
+			// - when no item is marked, delete the current one
+			// - do not allow delettion if len(key) == 0
 
-			if len(m.selected) > 0 {
-				for k := range m.selected {
-					rdb.del(m.choices[k])
+			if len(rdb.getKeys()) > 0 {
+				if len(m.selected) > 0 {
+					for k := range m.selected {
+						rdb.del(m.choices[k])
+					}
+					return initialModel(0, false, 0), nil
+				} else { // none selected
+					rdb.del(m.choices[m.cursor])
+					return initialModel(0, false, 0), nil
 				}
-				return initialModel(0, false, 0), nil
-			} else { // none selected
-				rdb.del(m.choices[m.cursor])
-				return initialModel(0, false, 0), nil
 			}
 		case "enter", " ":
 			_, ok := m.selected[m.cursor]
