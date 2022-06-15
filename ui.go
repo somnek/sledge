@@ -155,13 +155,13 @@ func (m model) View() string {
 		currentValue = rdb.get(m.choices[m.cursor])
 	}
 	// currentValue = colorFg(currentValue, "#F991CC")
-	currentValue = colorFg(currentValue, "#adc178")
 	instruction := colorFg("\nj:down, k:up, d:del, space:mark, r:refresh\n", "#8D8D8D")
 
 	var footer string
 	if valType(currentValue) == "map" {
-		footer = fmt.Sprintf("%v", string(pretty.Pretty([]byte(currentValue))))
+		footer += style.Render("value: " + colorFg(string(pretty.Pretty([]byte(currentValue))), "#adc178"))
 	} else {
+		currentValue = colorFg(currentValue, "#adc178")
 		footer = style.Render(fmt.Sprintf("value: %v", currentValue))
 	}
 
