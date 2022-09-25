@@ -35,8 +35,8 @@ func (s *Store) del(key string) {
 	}
 }
 
-func (s *Store) exists(key string) int64 {
-	return s.rdb.Exists(s.ctx, key).Val()
+func (s *Store) exists(key string) bool {
+	return s.rdb.Exists(s.ctx, key).Val() == 1
 }
 
 func (s *Store) getKeys() (ret []string) {

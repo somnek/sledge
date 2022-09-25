@@ -79,7 +79,17 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else if m.cursor == len(m.choices)-1 {
 				m.cursor = 0
 			}
-		case "d", "x":
+		case "ctrl+d":
+			// check if 'foo' key exists
+			rdb := connect(m.db)
+			if rdb.exists("foo") {
+				// * add to log here, replace in place
+			}
+			rdb.add("foo", "bar") // insert no matter what
+			// refresh
+			return initialModel(m.db, true, 0), nil
+
+		case "x", "d":
 			rdb := connect(m.db)
 
 			// deletion methods
@@ -155,7 +165,7 @@ func (m model) View() string {
 		currentValue = rdb.get(m.choices[m.cursor])
 	}
 	// currentValue = colorFg(currentValue, "#F991CC")
-	instruction := colorFg("\nj:down, k:up, d:del, space:mark, r:refresh\n", "#8D8D8D")
+	instruction := colorFg("\nj:down, k:up, d:del, space:mark, d:dummy, r:refresh\n", "#8D8D8D")
 
 	var footer string
 	if valType(currentValue) == "map" {
