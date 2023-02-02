@@ -27,26 +27,3 @@ func connect(db int) *Store {
 	}
 	return &rdb
 }
-
-// func snakeBite(key string) string {
-// 	// a file name config.env
-// 	viper.SetConfigName("config")
-// 	viper.AddConfigPath(".")
-// 	err := viper.ReadInConfig()
-// 	if err != nil {
-// 		log.Fatalf("Error while reading config files: %s", err)
-// 	}
-// 	// type asssertion
-// 	value, ok := viper.Get(key).(string)
-// 	if !ok {
-// 		log.Fatalf("Invalid type assertion")
-// 	}
-// 	return value
-// }
-
-// password := snakeBite("password")
-// connection := redis.NewClient(&redis.Options{
-// 	Addr:     "localhost:6379",
-// 	DB:       db,
-// 	Password: password,
-// })
