@@ -2,28 +2,29 @@ package main
 
 import (
 	"context"
+	"log"
 
-	"github.com/go-redis/redis/v8"
+	"github.com/redis/go-redis/v9"
 )
 
-func Ping(db int) string {
-	rdb := connect(db)
-	err := rdb.rdb.Ping(context.Background()).Err()
-	if err != nil {
-		return "PENG"
+const (
+	TIMEOUT = 10000 // 10 second
+)
+
+func connect() *redis.Client {
+	opts := &redis.Options{
+		Addr:     "localhost:6666",
+		Password: "",
+		DB:       0,
 	}
-	return "PONG"
+	return redis.NewClient(opts)
 }
 
-func connect(db int) *Store {
-	connection := redis.NewClient(&redis.Options{
-		Addr: "localhost:6666",
-		DB:   db,
-	},
-	)
-	rdb := Store{
-		ctx: context.Background(),
-		rdb: connection, // bad naming
+func Ping(ctx context.Context) string {
+	rdb := connect()
+	pong, err := rdb.WithTimeout(TIMEOUT).Ping(ctx).Result()
+	if err != nil {
+		log.Fatal(err)
 	}
-	return &rdb
+	return pong
 }
