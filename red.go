@@ -3,47 +3,72 @@ package main
 import (
 	"context"
 	"fmt"
-
-	"github.com/go-redis/redis/v8"
+	"log"
 )
 
-type Store struct {
-	ctx context.Context
-	rdb *redis.Client
-}
+/*
+get
+add
+del
+exists
+keys
+*/
 
-func (s *Store) get(key string) string {
-	rdb, ctx := s.rdb, s.ctx
+func get(ctx context.Context, key string) string {
+	rdb := connect()
 	val, err := rdb.Get(ctx, key).Result()
-	if err == redis.Nil {
-		return "Does not exist!"
-	} else {
-		return val
+	if err != nil {
+		log.Fatal(err)
+	}
+	return val
+}
+
+func add(ctx context.Context, key string, val string) {
+	rdb := connect()
+	err := rdb.Set(ctx, key, val, 0).Err()
+	if err != nil {
+		log.Fatal(err)
 	}
 }
 
-func (s *Store) add(key string, val string) {
-	err := s.rdb.Set(s.ctx, key, val, 0).Err()
-	if err == redis.Nil {
-		fmt.Println(err)
+func del(ctx context.Context, key string) {
+	rdb := connect()
+	if err := rdb.Del(ctx, key).Err(); err != nil {
+		log.Fatal(err)
 	}
 }
 
-func (s *Store) del(key string) {
-	if err := s.rdb.Del(s.ctx, key).Err(); err != nil {
-		panic(err)
+func keys(ctx context.Context) []string {
+	rdb := connect()
+
+	var cur uint64
+	var keys []string
+	var max int64 = 5
+
+	for {
+		var err error
+		keys, cur, err = rdb.Scan(ctx, cur, "*", max).Result()
+		if err != nil {
+			log.Fatal(err)
+			break
+		}
+
+		if cur == 0 {
+			break
+		}
 	}
+	return keys
 }
 
-func (s *Store) exists(key string) bool {
-	return s.rdb.Exists(s.ctx, key).Val() == 1
+func exists(ctx context.Context, key string) bool {
+	rdb := connect()
+	return rdb.Exists(ctx, key).Val() == 1
 }
 
-func (s *Store) getKeys() (ret []string) {
-	iter := s.rdb.Scan(s.ctx, 0, "", 0).Iterator()
-	for iter.Next(s.ctx) {
-		key := iter.Val()
-		ret = append(ret, key)
+func show(ctx context.Context) {
+	keys := keys(ctx)
+	for _, k := range keys {
+		v := get(ctx, k)
+		fmt.Println(k, v)
 	}
-	return
 }

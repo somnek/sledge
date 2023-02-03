@@ -1,19 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"os"
-
-	tea "github.com/charmbracelet/bubbletea"
+	"context"
 )
 
 func main() {
-	// init redis data
+	ctx := context.Background()
 	dummyIns()
-
-	p := tea.NewProgram(initialModel(0, false, 0))
-	if err := p.Start(); err != nil {
-		fmt.Printf("skull :%v", err)
-		os.Exit(1)
-	}
+	Ping(ctx)
+	show(ctx)
 }
