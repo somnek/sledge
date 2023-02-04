@@ -9,10 +9,10 @@ import (
 
 func main() {
 	ctx := context.Background()
-	dummyIns()
+	dummyIns(ctx)
 	Ping(ctx)
 
-	p := tea.NewProgram(initModel())
+	p := tea.NewProgram(initModel(ctx))
 	if err := p.Start(); err != nil {
 		log.Fatal(err)
 	}

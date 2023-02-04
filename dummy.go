@@ -10,8 +10,7 @@ var dummyData = map[string]string{
 	"e": "🐘",
 }
 
-func dummyIns() {
-	ctx := context.Background()
+func dummyIns(ctx context.Context) {
 	for key, val := range dummyData {
 		add(ctx, key, val)
 	}

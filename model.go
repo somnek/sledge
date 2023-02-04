@@ -1,17 +1,21 @@
 package main
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	"context"
+
+	tea "github.com/charmbracelet/bubbletea"
+)
 
 type model struct {
-	keys   []string
+	items  []string
 	cursor int
 	// selected map[int]struct{} // {2: 'ball'}
 	status string
 }
 
-func initModel() model {
-	keys := []string{"foo", "bar"}
-	return model{keys: keys}
+func initModel(ctx context.Context) model {
+	items := keys(ctx)
+	return model{items: items}
 }
 
 func (m model) Init() tea.Cmd {
