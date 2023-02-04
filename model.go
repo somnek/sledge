@@ -3,10 +3,10 @@ package main
 import tea "github.com/charmbracelet/bubbletea"
 
 type model struct {
-	keys     []string
-	cursor   int
-	selected map[int]struct{}
-	status   string
+	keys   []string
+	cursor int
+	// selected map[int]struct{} // {2: 'ball'}
+	status string
 }
 
 func initModel() model {
