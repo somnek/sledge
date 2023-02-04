@@ -12,40 +12,49 @@ const (
 	red       = lipgloss.Color("#EF798A")
 	darkGreen = lipgloss.Color("#4B644A")
 	brown     = lipgloss.Color("#49393B")
+	darkGray  = lipgloss.Color("#595959")
 )
 
 var (
-	styTitle       = lipgloss.NewStyle().Foreground(melon).MarginLeft(10).Bold(true).Faint(true)
-	styUnderline   = lipgloss.NewStyle().Foreground(yellow).MarginLeft(10).Faint(true)
-	styItemDefault = lipgloss.NewStyle().Foreground(yellow)
-	styItemSelect  = lipgloss.NewStyle().Foreground(yellow)
+	styTitle     = lipgloss.NewStyle().Foreground(brown).MarginLeft(10).Bold(true)
+	styUnderline = lipgloss.NewStyle().Foreground(red).MarginLeft(10).Bold(true)
+	styItem      = lipgloss.NewStyle().Foreground(darkGreen)
+	styStatus    = lipgloss.NewStyle().Foreground(darkGray)
 )
 
 func (m model) View() string {
 	var sBody string
-	var arrow string
-	var checked string
-	var row string
+	var body string
 
+	// -----> header
 	sTitle := styTitle.Render("Welcome to red list... 🥥")
 	sUnder := styUnderline.Render("─────────────────────────")
 
-	for i, k := range m.keys {
-		// TODO:  do selectd later
+	// -----> body
+	for i, k := range m.items {
+		var arrow string   // " " or >
+		var checked string //" "  or x
+
 		if m.cursor == i {
 			arrow = ">"
-			row = fmt.Sprintf("%s[%s] %s\n", arrow, checked, k)
+			checked = "x"
 		} else {
-			row = fmt.Sprintf("%s[%s] %s\n", arrow, checked, k)
+			arrow = " "
+			checked = " "
 		}
 
-		sBody += styItemDefault.Render(row)
+		body += fmt.Sprintf("%s[%s] %s\n", arrow, checked, k)
 	}
+	sBody += styItem.Render(body)
+
+	// -----> footer
+	sStatus := styStatus.Render(m.status)
 
 	return fmt.Sprintf(
-		"\n%s\n%s\n%s\n",
+		"\n%s\n%s\n%s\n\n%s",
 		sTitle,
 		sUnder,
 		sBody,
+		sStatus,
 	)
 }
