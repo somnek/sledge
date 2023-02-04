@@ -40,22 +40,9 @@ func del(ctx context.Context, key string) {
 
 func keys(ctx context.Context) []string {
 	rdb := connect()
-
-	var cur uint64
-	var keys []string
-	var max int64 = 5
-
-	for {
-		var err error
-		keys, cur, err = rdb.Scan(ctx, cur, "*", max).Result()
-		if err != nil {
-			log.Fatal(err)
-			break
-		}
-
-		if cur == 0 {
-			break
-		}
+	keys, err := rdb.Keys(ctx, "*").Result()
+	if err != nil {
+		log.Fatal(err)
 	}
 	return keys
 }
