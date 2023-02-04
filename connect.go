@@ -7,10 +7,6 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-const (
-	TIMEOUT = 10000 // 10 second
-)
-
 func connect() *redis.Client {
 	opts := &redis.Options{
 		Addr:     "localhost:6666",
@@ -20,11 +16,10 @@ func connect() *redis.Client {
 	return redis.NewClient(opts)
 }
 
-func Ping(ctx context.Context) string {
+func Ping(ctx context.Context) {
 	rdb := connect()
-	pong, err := rdb.WithTimeout(TIMEOUT).Ping(ctx).Result()
+	_, err := rdb.Ping(ctx).Result()
 	if err != nil {
 		log.Fatal(err)
 	}
-	return pong
 }
