@@ -17,11 +17,14 @@ const (
 )
 
 var (
-	styTitle     = lipgloss.NewStyle().Foreground(brown).MarginLeft(10).Bold(true)
-	styUnderline = lipgloss.NewStyle().Foreground(red).MarginLeft(10).Bold(true)
-	styItem      = lipgloss.NewStyle().Foreground(darkGreen)
-	styStatus    = lipgloss.NewStyle().Foreground(darkGray)
-	styValue     = lipgloss.NewStyle().Foreground(darkGray)
+	styTitle         = lipgloss.NewStyle().Foreground(melon).MarginLeft(10).Bold(true)
+	styUnderline     = lipgloss.NewStyle().Foreground(red).MarginLeft(10).Bold(true)
+	styBodyContainer = lipgloss.NewStyle().Foreground(yellow).MarginLeft(10)
+	styStatus        = lipgloss.NewStyle().Foreground(darkGray)
+	styBox           = lipgloss.NewStyle().Foreground(melon)
+	styKey           = lipgloss.NewStyle().Foreground(yellow)
+	styValue         = lipgloss.NewStyle().Foreground(darkGray)
+	styArrow         = lipgloss.NewStyle().Foreground(red).Render
 )
 
 func (m model) View() string {
@@ -34,20 +37,25 @@ func (m model) View() string {
 
 	// -----> body
 	for i, k := range m.items {
-		var arrow string   // " " or >
-		var checked string //" "  or x
+		var arrow string // " " or >
+		var box string   //[ ] or [x]
 
 		if m.cursor == i {
-			arrow = ">"
-			checked = "x"
+			arrow = styArrow(">")
+			box = "[x]"
+			styBox.Bold(true)
+			styKey.Bold(true)
 		} else {
 			arrow = " "
-			checked = " "
+			box = "[ ]"
+			styBox.Bold(false)
+			styKey.Bold(false)
 		}
 
-		body += fmt.Sprintf("%s[%s] %s\n", arrow, checked, k)
+		body += fmt.Sprintf("%s%s %s\n", arrow, styBox.Render(box), styKey.Render(k))
 	}
-	sBody += styItem.Render(body)
+	// sBody = lipgloss.JoinVertical(lipgloss.Top, body)
+	sBody = styBodyContainer.Render(body)
 
 	// -----> footer
 	ctx := context.Background()
