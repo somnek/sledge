@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 
 	"github.com/charmbracelet/lipgloss"
@@ -20,6 +21,7 @@ var (
 	styUnderline = lipgloss.NewStyle().Foreground(red).MarginLeft(10).Bold(true)
 	styItem      = lipgloss.NewStyle().Foreground(darkGreen)
 	styStatus    = lipgloss.NewStyle().Foreground(darkGray)
+	styValue     = lipgloss.NewStyle().Foreground(darkGray)
 )
 
 func (m model) View() string {
@@ -48,13 +50,18 @@ func (m model) View() string {
 	sBody += styItem.Render(body)
 
 	// -----> footer
+	ctx := context.Background()
+
+	value := get(ctx, m.items[m.cursor])
+	sValue := styValue.Render(value)
 	sStatus := styStatus.Render(m.status)
 
 	return fmt.Sprintf(
-		"\n%s\n%s\n%s\n\n%s",
+		"\n%s\n%s\n%s\n%s\n\n%s",
 		sTitle,
 		sUnder,
 		sBody,
+		sValue,
 		sStatus,
 	)
 }

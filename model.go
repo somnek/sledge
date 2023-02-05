@@ -10,6 +10,7 @@ type model struct {
 	items  []string
 	cursor int
 	// selected map[int]struct{} // {2: 'ball'}
+	value  string
 	status string
 }
 

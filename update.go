@@ -18,9 +18,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 			return m, nil
 		case "down", "j":
-			if m.cursor < len(m.items) {
+			if m.cursor < len(m.items)-1 {
 				m.cursor++
-			} else if m.cursor == len(m.items) {
+			} else if m.cursor == len(m.items)-1 {
 				m.cursor = 0
 			}
 			return m, nil
