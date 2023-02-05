@@ -9,9 +9,9 @@ import (
 type model struct {
 	items  []string
 	cursor int
-	// selected map[int]struct{} // {2: 'ball'}
+	marked []int
 	value  string
-	status string
+	// selected map[int]struct{} // {2: 'ball'}
 }
 
 func initModel(ctx context.Context) model {

@@ -20,7 +20,6 @@ var (
 	styTitle         = lipgloss.NewStyle().Foreground(melon).MarginLeft(10).Bold(true)
 	styUnderline     = lipgloss.NewStyle().Foreground(red).MarginLeft(10).Bold(true)
 	styBodyContainer = lipgloss.NewStyle().Foreground(yellow).MarginLeft(10)
-	styStatus        = lipgloss.NewStyle().Foreground(darkGray)
 	styBox           = lipgloss.NewStyle().Foreground(melon)
 	styKey           = lipgloss.NewStyle().Foreground(yellow)
 	styValue         = lipgloss.NewStyle().Foreground(darkGray)
@@ -38,23 +37,28 @@ func (m model) View() string {
 	// -----> body
 	for i, k := range m.items {
 		var arrow string // " " or >
-		var box string   //[ ] or [x]
+		var box = "[ ]"  //[ ] or [x]
 
+		// on cursor
 		if m.cursor == i {
 			arrow = styArrow(">")
-			box = "[x]"
 			styBox.Bold(true)
 			styKey.Bold(true)
 		} else {
 			arrow = " "
-			box = "[ ]"
 			styBox.Bold(false)
 			styKey.Bold(false)
 		}
 
+		// on marked
+		for _, n := range m.marked {
+			if n == i {
+				box = "[x]"
+			}
+		}
+
 		body += fmt.Sprintf("%s%s %s\n", arrow, styBox.Render(box), styKey.Render(k))
 	}
-	// sBody = lipgloss.JoinVertical(lipgloss.Top, body)
 	sBody = styBodyContainer.Render(body)
 
 	// -----> footer
@@ -62,14 +66,12 @@ func (m model) View() string {
 
 	value := get(ctx, m.items[m.cursor])
 	sValue := styValue.Render(value)
-	sStatus := styStatus.Render(m.status)
 
 	return fmt.Sprintf(
-		"\n%s\n%s\n%s\n%s\n\n%s",
+		"\n%s\n%s\n%s\n%s\n",
 		sTitle,
 		sUnder,
 		sBody,
 		sValue,
-		sStatus,
 	)
 }

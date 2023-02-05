@@ -24,6 +24,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.cursor = 0
 			}
 			return m, nil
+		case "enter", " ":
+			// check if cursor already in marked
+			if contains(m.marked, m.cursor) {
+				m.marked = remove(m.marked, m.cursor)
+				return m, nil
+			}
+			m.marked = append(m.marked, m.cursor)
+			return m, nil
 		}
 	}
 	return m, nil
