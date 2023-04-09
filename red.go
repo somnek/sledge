@@ -6,14 +6,6 @@ import (
 	"log"
 )
 
-/*
-get
-add
-del
-exists
-keys
-*/
-
 func get(ctx context.Context, key string) string {
 	rdb := connect()
 	val, err := rdb.Get(ctx, key).Result()

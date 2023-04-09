@@ -9,8 +9,8 @@ import (
 
 func connect() *redis.Client {
 	opts := &redis.Options{
-		Addr:     "localhost:6666",
-		Password: "",
+		Addr:     "localhost:6379",
+		Password: "1234",
 		DB:       0,
 	}
 	return redis.NewClient(opts)

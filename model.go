@@ -7,11 +7,11 @@ import (
 )
 
 type model struct {
-	items  []string
-	cursor int
-	marked []int
-	value  string
-	// selected map[int]struct{} // {2: 'ball'}
+	items    []string
+	cursor   int
+	marked   []int
+	value    string
+	selected map[int]struct{} // {2: 'ball'}
 }
 
 func initModel(ctx context.Context) model {

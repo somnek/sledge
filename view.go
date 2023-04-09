@@ -31,7 +31,7 @@ func (m model) View() string {
 	var body string
 
 	// -----> header
-	sTitle := styTitle.Render("Welcome to red list... 🥥")
+	sTitle := styTitle.Render("Welcome to redlist... 🥥")
 	sUnder := styUnderline.Render("─────────────────────────")
 
 	// -----> body
