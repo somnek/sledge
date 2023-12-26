@@ -2,43 +2,15 @@ package main
 
 import (
 	"fmt"
-	"log"
+	"os"
+
+	tea "github.com/charmbracelet/bubbletea"
 )
 
 func main() {
-	var err error
-
-	r, err := NewClient("localhost:6379", 0)
-	if err != nil {
-		log.Fatal(err)
+	p := tea.NewProgram(initialModel())
+	if _, err := p.Run(); err != nil {
+		fmt.Printf("Alas, there's been an error: %v", err)
+		os.Exit(1)
 	}
-	defer r.Close()
-
-	// set
-	err = r.Set(ctx, "key", "value")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("set completed")
-
-	// get
-	val, err := r.Get(ctx, "key")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("val -> ", val)
-
-	// del
-	err = r.Del(ctx, "key")
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Println("del completed")
-
-	// get
-	val, err = r.Get(ctx, "key")
-	if err != nil {
-		fmt.Println(err)
-	}
-	fmt.Println("val -> ", val)
 }
