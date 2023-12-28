@@ -32,7 +32,6 @@ func makeTable() table.Model {
 		BorderForeground(lipgloss.Color("240")).
 		BorderBottom(true).
 		Bold(false)
-	// s.Selected = s.Cell // treat selected row as normal
 
 	s.Selected = s.Selected.
 		Foreground(lipgloss.Color("229")).
