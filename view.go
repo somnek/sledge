@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	typeStyleMap = map[string]lipgloss.Style{
+	kindStyleMap = map[string]lipgloss.Style{
 		"string": styleString,
 		"list":   styleList,
 		"hash":   styleHash,
@@ -16,24 +16,28 @@ var (
 )
 
 func (m model) View() string {
+	title := "Sledge 🛷 - Redis TUI"
 	sb := strings.Builder{}
 
-	var typeStyle, keyStyle lipgloss.Style
+	var kindStyle, keyStyle lipgloss.Style
+	var bodyContent string
 
 	for i, record := range m.records {
-		typeStyle = typeStyleMap[record.kind]
+		kindStyle = kindStyleMap[record.kind]
 		if i == m.cursor {
 			keyStyle = styleSelected
 		} else {
 			keyStyle = styleNormal
 		}
 
-		rowContent := fmt.Sprintf("%s%s", typeStyle.Render(record.kind), keyStyle.Render(record.key))
-		sb.WriteString(rowContent)
-		sb.WriteString("\n")
+		kindContent := kindStyle.Render(record.kind)
+		keyContent := keyStyle.Render(record.key)
+		rowContent := fmt.Sprintf("%s%s", kindContent, keyContent)
+
+		bodyContent += rowContent + "\n"
 	}
 
-	sb.WriteString("\n")
-	sb.WriteString(m.table.View())
+	titleContent := styleTitle.Render(title)
+	sb.WriteString(styleBody.Render(titleContent + "\n" + bodyContent + "\n" + m.table.View()))
 	return sb.String()
 }

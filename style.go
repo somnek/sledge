@@ -19,6 +19,11 @@ var (
 	palette9  = lipgloss.Color("#F2C6DE")
 	palette10 = lipgloss.Color("#F9C6C9")
 
+	styleTitle = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(snow)).
+			Background(lipgloss.Color(palette10)).
+			Bold(true).Align(lipgloss.Center).
+			Width(48)
 	styleSelected = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette2)).
@@ -29,7 +34,9 @@ var (
 			Background(lipgloss.Color(palette1)).
 			Width(40).PaddingLeft(2)
 	styleBody = lipgloss.NewStyle().
-			Padding(0, 1, 0, 1)
+			Padding(0, 1, 0, 1).
+			BorderStyle(lipgloss.RoundedBorder()).
+			BorderForeground(lipgloss.Color(palette2))
 	styleHash = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette7)).

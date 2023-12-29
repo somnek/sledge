@@ -12,11 +12,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "j", "down":
 			if m.cursor < len(m.records)-1 {
 				m.cursor++
+			} else {
+				m.cursor = 0
 			}
 
 		case "k", "up":
 			if m.cursor > 0 {
 				m.cursor--
+			} else {
+				m.cursor = len(m.records) - 1
 			}
 		}
 	}
