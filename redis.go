@@ -14,6 +14,7 @@ type Rdb struct {
 	client *redis.Client
 }
 
+// Create a new redis client.
 func NewClient(addr string, db int) (*Rdb, error) {
 	opts := &redis.Options{
 		Addr:     addr,
@@ -25,6 +26,7 @@ func NewClient(addr string, db int) (*Rdb, error) {
 	return c, nil
 }
 
+// cmd: PING
 func (r *Rdb) Ping() {
 	_, err := r.client.Ping(ctx).Result()
 	if err != nil {
@@ -32,6 +34,7 @@ func (r *Rdb) Ping() {
 	}
 }
 
+// cmd: EXISTS
 func (r *Rdb) Exists(ctx context.Context, key string) bool {
 	exist, err := r.client.Exists(ctx, key).Result()
 	if err != nil {
@@ -44,10 +47,12 @@ func (r *Rdb) Exists(ctx context.Context, key string) bool {
 	return false
 }
 
+// cmd: SET
 func (r *Rdb) Set(ctx context.Context, key string, val interface{}) error {
 	return r.client.Set(ctx, key, val, 0).Err()
 }
 
+// cmd: GET
 func (r *Rdb) Get(ctx context.Context, key string) (string, error) {
 	if !r.Exists(ctx, key) {
 		return "", fmt.Errorf("key not found")
@@ -55,10 +60,12 @@ func (r *Rdb) Get(ctx context.Context, key string) (string, error) {
 	return r.client.Get(ctx, key).Result()
 }
 
+// cmd: DEL
 func (r *Rdb) Del(ctx context.Context, key string) error {
 	return r.client.Del(ctx, key).Err()
 }
 
+// cmd: KEYS
 func (r *Rdb) Keys(ctx context.Context, pattern string) ([]string, error) {
 	keys, err := r.client.Keys(ctx, pattern).Result()
 	if err != nil {
@@ -67,10 +74,7 @@ func (r *Rdb) Keys(ctx context.Context, pattern string) ([]string, error) {
 	return keys, nil
 }
 
-func (r *Rdb) Close() error {
-	return r.client.Close()
-}
-
+// cmd: TYPE
 func (r *Rdb) Type(ctx context.Context, key string) (string, error) {
 	kind, err := r.client.Type(ctx, key).Result()
 	if err != nil {
@@ -79,6 +83,7 @@ func (r *Rdb) Type(ctx context.Context, key string) (string, error) {
 	return kind, err
 }
 
+// cmd: HKEYS
 func (r *Rdb) HKeys(ctx context.Context, key string) ([]string, error) {
 	fields, err := r.client.HKeys(ctx, key).Result()
 	if err != nil {
@@ -87,6 +92,7 @@ func (r *Rdb) HKeys(ctx context.Context, key string) ([]string, error) {
 	return fields, nil
 }
 
+// cmd: HGET
 func (r *Rdb) Hget(ctx context.Context, key, field string) (string, error) {
 	val, err := r.client.HGet(ctx, key, field).Result()
 	if err != nil {
@@ -95,6 +101,7 @@ func (r *Rdb) Hget(ctx context.Context, key, field string) (string, error) {
 	return val, nil
 }
 
+// ValFromHash returns a map of field-value pairs from a hash.
 func (r *Rdb) ValFromHash(ctx context.Context, key string) (map[string]string, error) {
 	m := make(map[string]string)
 
@@ -115,6 +122,9 @@ func (r *Rdb) ValFromHash(ctx context.Context, key string) (map[string]string, e
 	return m, nil
 }
 
+// ExtractVal returns the value of a key based on its type.
+// string -> string
+// hash   -> map[string]string
 func (r *Rdb) ExtractVal(ctx context.Context, key, kind string) (interface{}, error) {
 	var val interface{}
 	var err error
@@ -136,6 +146,8 @@ func (r *Rdb) ExtractVal(ctx context.Context, key, kind string) (interface{}, er
 	return val, nil
 }
 
+// GetRecords returns a slice of Record structs.
+// Get all records in database and convert them to Record structs.
 func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) {
 
 	keys, err := r.Keys(ctx, pattern)
@@ -166,4 +178,8 @@ func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) 
 	}
 
 	return records, nil
+}
+
+func (r *Rdb) Close() error {
+	return r.client.Close()
 }

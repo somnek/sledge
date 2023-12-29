@@ -12,7 +12,6 @@ type Record struct {
 	val  interface{}
 	kind string
 }
-
 type model struct {
 	table   table.Model
 	records []Record
@@ -30,24 +29,14 @@ func initialModel() model {
 	defer rdb.Close()
 
 	t := makeTable()
-	types, err := rdb.GetRecords(ctx, "*")
+	records, err := rdb.GetRecords(ctx, "*")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	for _, t := range types {
-		if t.kind == "hash" {
-			for k, v := range t.val.(map[string]string) {
-				log.Printf("key: %s, val: %s\n", k, v)
-			}
-		} else {
-			log.Printf("key: %s, val: %s\n", t.key, t.val)
-		}
-	}
-
 	return model{
 		table:   t,
-		records: []Record{},
+		records: records,
 		cursor:  0,
 	}
 }

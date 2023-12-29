@@ -8,14 +8,24 @@ import (
 func makeTable() table.Model {
 
 	rows := []table.Row{
-		{"🌊 ", "water"},
-		{"🔥 ", "fire"},
-		{"🌱 ", "grass"},
+		{"1", "Tokyo", "Japan", "37,274,000"},
+		{"2", "Delhi", "India", "32,065,760"},
+		{"3", "Shanghai", "China", "28,516,904"},
+		{"4", "Dhaka", "Bangladesh", "22,478,116"},
+		{"5", "São Paulo", "Brazil", "22,429,800"},
+		{"6", "Mexico City", "Mexico", "22,085,140"},
+		{"7", "Cairo", "Egypt", "21,750,020"},
+		{"8", "Beijing", "China", "21,333,332"},
+		{"9", "Mumbai", "India", "20,961,472"},
+		{"10", "Osaka", "Japan", "19,059,856"},
+		{"11", "Chongqing", "China", "16,874,740"},
 	}
 
 	columns := []table.Column{
-		{Title: "⭐️", Width: 10},
-		{Title: "name", Width: 10},
+		{Title: "Index", Width: 10},
+		{Title: "City", Width: 10},
+		{Title: "Country", Width: 10},
+		{Title: "Populatin", Width: 10},
 	}
 
 	t := table.New(
