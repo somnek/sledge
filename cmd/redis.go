@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"context"
@@ -15,11 +15,10 @@ type Rdb struct {
 }
 
 // Create a new redis client.
-func NewClient(addr string, db int) (*Rdb, error) {
-	opts := &redis.Options{
-		Addr:     addr,
-		Password: "",
-		DB:       db,
+func NewClient(url string) (*Rdb, error) {
+	opts, err := redis.ParseURL(url)
+	if err != nil {
+		return nil, err
 	}
 	c := &Rdb{redis.NewClient(opts)}
 	c.Ping()

@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"log"
@@ -18,11 +18,11 @@ type model struct {
 	cursor  int
 }
 
-func initialModel() model {
+func initialModel(url string) model {
 	var err error
 
 	// redis
-	rdb, err := NewClient("localhost:6379", 0)
+	rdb, err := NewClient(url)
 	if err != nil {
 		log.Fatal(err)
 	}
