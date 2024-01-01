@@ -12,7 +12,7 @@ import (
 
 var rootCmd = &cobra.Command{
 	Use:   "sledge",
-	Short: fmt.Sprintf("\n🛷 Sledge is a Redis TUI for data viewing.\n"),
+	Short: "\n🛷 Sledge is a Redis TUI for data viewing.\n",
 	Args:  cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		// debug

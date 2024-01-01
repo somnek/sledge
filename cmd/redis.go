@@ -29,7 +29,7 @@ func NewClient(url string) (*Rdb, error) {
 func (r *Rdb) Ping() {
 	_, err := r.client.Ping(ctx).Result()
 	if err != nil {
-		log.Fatalf("ping failed: %v", err)
+		log.Fatal(err)
 	}
 }
 

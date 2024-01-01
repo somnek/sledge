@@ -20,7 +20,7 @@ var (
 	palette10 = lipgloss.Color("#F9C6C9")
 
 	styleTitle = lipgloss.NewStyle().
-			Foreground(lipgloss.Color(snow)).
+			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette10)).
 			Bold(true).Align(lipgloss.Center).
 			Width(48)
