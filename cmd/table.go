@@ -7,25 +7,31 @@ import (
 
 // recordToTable converts slices of Records to a table.Model.
 func recordToTable(record Record) table.Model {
+	var rows []table.Row
+	var columns []table.Column
 
-	if records
-	rows := []table.Row{
-		{"Japan", "37,274,000"},
-		{"India", "32,065,760"},
-		{"China", "28,516,904"},
-		{"Bangladesh", "22,478,116"},
-		{"Brazil", "22,429,800"},
-		{"Mexico", "22,085,140"},
-		{"Egypt", "21,750,020"},
-		{"China", "21,333,332"},
-		{"India", "20,961,472"},
-		{"Japan", "19,059,856"},
-		{"China", "16,874,740"},
-	}
+	switch record.kind {
+	case "hash":
+		m := record.val.(map[string]string)
 
-	columns := []table.Column{
-		{Title: "Country", Width: 10},
-		{Title: "Population", Width: 10},
+		for k, v := range m {
+			rows = append(rows, table.Row{k, v})
+		}
+
+		columns = []table.Column{
+			{Title: "Field", Width: 24},
+			{Title: "Value", Width: 24},
+		}
+
+	case "list":
+		vals := record.val.([]string)
+
+		for _, v := range vals {
+			rows = append(rows, table.Row{v})
+		}
+		columns = []table.Column{
+			{Title: "Values", Width: 10},
+		}
 	}
 
 	t := makeTable(columns, rows)

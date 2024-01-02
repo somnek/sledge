@@ -35,8 +35,7 @@ func initialModel(url string) model {
 	}
 
 	// table
-	t := recordToTable(records)
-	// t := makeTable()
+	t := recordToTable(Record{})
 
 	return model{
 		table:   t,

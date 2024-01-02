@@ -47,13 +47,7 @@ func (m model) View() string {
 	case "hash":
 		bottom += m.table.View()
 	case "list":
-		vals := selected.val.([]string)
-		for i, val := range vals {
-			bottom += fmt.Sprintf("%s", val)
-			if i < len(vals)-1 {
-				bottom += "\n"
-			}
-		}
+		bottom += m.table.View()
 	}
 
 	// fill bottom

@@ -15,6 +15,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursor = 0
 			}
+			m.table = recordToTable(m.records[m.cursor])
 
 		case "k", "up":
 			if m.cursor > 0 {
@@ -22,6 +23,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursor = len(m.records) - 1
 			}
+			m.table = recordToTable(m.records[m.cursor])
 		}
 	}
 
