@@ -2,6 +2,11 @@ package cmd
 
 import "github.com/charmbracelet/lipgloss"
 
+const (
+	minBottomHeight = 9
+	minWidth        = 48
+)
+
 var (
 	lava      = lipgloss.Color("#F56E0F")
 	void      = lipgloss.Color("#151419")
@@ -23,7 +28,7 @@ var (
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette10)).
 			Bold(true).Align(lipgloss.Center).
-			Width(48)
+			Width(minWidth)
 	styleSelected = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette2)).
@@ -33,7 +38,7 @@ var (
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette1)).
 			Width(40).PaddingLeft(2)
-	styleBody = lipgloss.NewStyle().
+	styleApp = lipgloss.NewStyle().
 			Padding(0, 1, 0, 1).
 			BorderStyle(lipgloss.RoundedBorder()).
 			BorderForeground(lipgloss.Color(palette2))

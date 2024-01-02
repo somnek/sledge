@@ -92,7 +92,7 @@ func (r *Rdb) HKeys(ctx context.Context, key string) ([]string, error) {
 }
 
 // cmd: HGET
-func (r *Rdb) Hget(ctx context.Context, key, field string) (string, error) {
+func (r *Rdb) HGet(ctx context.Context, key, field string) (string, error) {
 	val, err := r.client.HGet(ctx, key, field).Result()
 	if err != nil {
 		return "", err
@@ -100,7 +100,16 @@ func (r *Rdb) Hget(ctx context.Context, key, field string) (string, error) {
 	return val, nil
 }
 
-// ValFromHash returns a map of field-value pairs from a hash.
+// cmd: LRANGE
+func (r *Rdb) LRange(ctx context.Context, key string) ([]string, error) {
+	val, err := r.client.LRange(ctx, key, 0, -1).Result() // assuming getting all element
+	if err != nil {
+		return []string{}, nil
+	}
+	return val, nil
+}
+
+// ValFromHash returns a map of field-value pairs from a hash type.
 func (r *Rdb) ValFromHash(ctx context.Context, key string) (map[string]string, error) {
 	m := make(map[string]string)
 
@@ -110,7 +119,7 @@ func (r *Rdb) ValFromHash(ctx context.Context, key string) (map[string]string, e
 	}
 
 	for _, f := range fields {
-		val, err := r.Hget(ctx, key, f)
+		val, err := r.HGet(ctx, key, f)
 		if err != nil {
 			return nil, err
 		}
@@ -137,6 +146,12 @@ func (r *Rdb) ExtractVal(ctx context.Context, key, kind string) (interface{}, er
 
 	case "hash":
 		val, err = r.ValFromHash(ctx, key)
+		if err != nil {
+			return nil, err
+		}
+
+	case "list":
+		val, err = r.LRange(ctx, key)
 		if err != nil {
 			return nil, err
 		}

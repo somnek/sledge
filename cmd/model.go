@@ -28,11 +28,15 @@ func initialModel(url string) model {
 	}
 	defer rdb.Close()
 
-	t := makeTable()
+	// records
 	records, err := rdb.GetRecords(ctx, "*")
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	// table
+	t := recordToTable(records)
+	// t := makeTable()
 
 	return model{
 		table:   t,

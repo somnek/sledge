@@ -17,27 +17,49 @@ var (
 
 func (m model) View() string {
 	title := "Sledge 🛷 - Redis TUI"
-	sb := strings.Builder{}
-
 	var kindStyle, keyStyle lipgloss.Style
-	var bodyContent string
+	var bodyView, top, bottom string
+	var selected Record
 
 	for i, record := range m.records {
 		kindStyle = kindStyleMap[record.kind]
 		if i == m.cursor {
+			selected = record
 			keyStyle = styleSelected
 		} else {
 			keyStyle = styleNormal
 		}
 
-		kindContent := kindStyle.Render(record.kind)
-		keyContent := keyStyle.Render(record.key)
-		rowContent := fmt.Sprintf("%s%s", kindContent, keyContent)
+		kindView := kindStyle.Render(record.kind)
+		keyView := keyStyle.Render(record.key)
+		rowView := fmt.Sprintf("%s%s", kindView, keyView)
 
-		bodyContent += rowContent + "\n"
+		bodyView += rowView + "\n"
 	}
 
-	titleContent := styleTitle.Render(title)
-	sb.WriteString(styleBody.Render(titleContent + "\n" + bodyContent + "\n" + m.table.View()))
-	return sb.String()
+	titleView := styleTitle.Render(title)
+	top = titleView + "\n" + bodyView
+
+	// values
+	switch selected.kind {
+	case "string":
+		bottom += selected.val.(string)
+	case "hash":
+		bottom += m.table.View()
+	case "list":
+		vals := selected.val.([]string)
+		for i, val := range vals {
+			bottom += fmt.Sprintf("%s", val)
+			if i < len(vals)-1 {
+				bottom += "\n"
+			}
+		}
+	}
+
+	// fill bottom
+	botHeight := countRune(bottom, '\n')
+	bottom += strings.Repeat("\n", minBottomHeight-botHeight-1)
+
+	finalView := styleApp.Render(lipgloss.JoinVertical(lipgloss.Left, top, bottom))
+	return finalView + "\n"
 }
