@@ -1,9 +1,32 @@
 package cmd
 
-import tea "github.com/charmbracelet/bubbletea"
+import (
+	"log"
+
+	tea "github.com/charmbracelet/bubbletea"
+)
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
+
+	// tick events
+	case TickMsg:
+		// connect
+		rdb, err := NewClient(m.url)
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer rdb.Close()
+
+		// records
+		m.records, err = rdb.GetRecords(ctx, "*")
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		return m, doTick()
+
+	// key events
 	case tea.KeyMsg:
 		switch msg.String() {
 		case "q", "ctrl+c":
