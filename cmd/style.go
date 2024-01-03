@@ -4,7 +4,7 @@ import "github.com/charmbracelet/lipgloss"
 
 const (
 	minBottomHeight = 9
-	minWidth        = 48
+	maxWidth        = 48
 )
 
 var (
@@ -27,17 +27,19 @@ var (
 	styleTitle = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette10)).
-			Bold(true).Align(lipgloss.Center).
-			Width(minWidth)
+			Bold(true).
+			Align(lipgloss.Center).
+			Width(maxWidth + 2)
 	styleSelected = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette2)).
 			Bold(true).
-			Width(40).PaddingLeft(2)
+			Width(42).PaddingLeft(2)
 	styleNormal = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette1)).
-			Width(40).PaddingLeft(2)
+			Width(42).
+			PaddingLeft(2)
 	styleApp = lipgloss.NewStyle().
 			Padding(0, 1, 0, 1).
 			BorderStyle(lipgloss.RoundedBorder()).
@@ -51,6 +53,12 @@ var (
 	styleString = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette8)).
+			Bold(true).
+			Width(8).
+			Align(lipgloss.Center)
+	styleSet = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(slate)).
+			Background(lipgloss.Color(palette4)).
 			Bold(true).
 			Width(8).
 			Align(lipgloss.Center)

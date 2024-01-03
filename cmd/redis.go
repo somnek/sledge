@@ -100,6 +100,15 @@ func (r *Rdb) HGet(ctx context.Context, key, field string) (string, error) {
 	return val, nil
 }
 
+// cmd: SMEMBERS
+func (r *Rdb) SMembers(ctx context.Context, key string) ([]string, error) {
+	val, err := r.client.SMembers(ctx, key).Result()
+	if err != nil {
+		return nil, err
+	}
+	return val, nil
+}
+
 // cmd: LRANGE
 func (r *Rdb) LRange(ctx context.Context, key string) ([]string, error) {
 	val, err := r.client.LRange(ctx, key, 0, -1).Result() // assuming getting all element
@@ -152,6 +161,12 @@ func (r *Rdb) ExtractVal(ctx context.Context, key, kind string) (interface{}, er
 
 	case "list":
 		val, err = r.LRange(ctx, key)
+		if err != nil {
+			return nil, err
+		}
+
+	case "set":
+		val, err = r.SMembers(ctx, key)
 		if err != nil {
 			return nil, err
 		}

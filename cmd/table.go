@@ -19,8 +19,8 @@ func recordToTable(record Record) table.Model {
 		}
 
 		columns = []table.Column{
-			{Title: "Field", Width: 24},
-			{Title: "Value", Width: 24},
+			{Title: "Field", Width: 13},
+			{Title: "Value", Width: 33},
 		}
 
 	case "list":
@@ -30,7 +30,17 @@ func recordToTable(record Record) table.Model {
 			rows = append(rows, table.Row{v})
 		}
 		columns = []table.Column{
-			{Title: "Values", Width: 10},
+			{Title: "Values", Width: maxWidth},
+		}
+
+	case "set":
+		vals := record.val.([]string)
+
+		for _, v := range vals {
+			rows = append(rows, table.Row{v})
+		}
+		columns = []table.Column{
+			{Title: "Members", Width: maxWidth},
 		}
 	}
 

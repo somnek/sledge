@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
+	"github.com/mattn/go-runewidth"
 )
 
 var (
@@ -12,6 +13,7 @@ var (
 		"string": styleString,
 		"list":   styleList,
 		"hash":   styleHash,
+		"set":    styleSet,
 	}
 )
 
@@ -43,10 +45,13 @@ func (m model) View() string {
 	// values
 	switch selected.kind {
 	case "string":
-		bottom += selected.val.(string)
+		val := selected.val.(string)
+		bottom += runewidth.Truncate(val, maxWidth, "…")
 	case "hash":
 		bottom += m.table.View()
 	case "list":
+		bottom += m.table.View()
+	case "set":
 		bottom += m.table.View()
 	}
 
