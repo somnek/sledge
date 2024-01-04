@@ -3,8 +3,8 @@ package cmd
 import "github.com/charmbracelet/lipgloss"
 
 const (
-	minBottomHeight = 9
-	maxWidth        = 48
+	fixedBottomHeight = 9
+	maxWidth          = 48
 )
 
 var (

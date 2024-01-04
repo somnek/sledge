@@ -5,7 +5,7 @@ import (
 	"strings"
 
 	"github.com/charmbracelet/lipgloss"
-	"github.com/mattn/go-runewidth"
+	"github.com/muesli/reflow/wordwrap"
 )
 
 var (
@@ -46,18 +46,32 @@ func (m model) View() string {
 	switch selected.kind {
 	case "string":
 		val := selected.val.(string)
-		bottom += runewidth.Truncate(val, maxWidth, "…")
+		// bottom += runewidth.Truncate(val, maxWidth, "…")
+		wrap := wordwrap.String(val, maxWidth)
+		splits := strings.Split(wrap, "\n")
+
+		if len(splits) > fixedBottomHeight {
+			// replace last line with ellipsis
+			splits = splits[:fixedBottomHeight-1]
+			bottom += strings.Join(splits, "\n")
+			bottom += "\n" + strings.Repeat(" ", 20) + "..."
+		} else {
+			bottom += strings.Join(splits, "\n")
+		}
+
 	case "hash":
 		bottom += m.table.View()
+
 	case "list":
 		bottom += m.table.View()
+
 	case "set":
 		bottom += m.table.View()
 	}
 
 	// fill bottom
 	botHeight := countRune(bottom, '\n')
-	bottom += strings.Repeat("\n", minBottomHeight-botHeight-1)
+	bottom += strings.Repeat("\n", fixedBottomHeight-botHeight-1)
 
 	finalView := styleApp.Render(lipgloss.JoinVertical(lipgloss.Left, top, bottom))
 	return finalView + "\n"
