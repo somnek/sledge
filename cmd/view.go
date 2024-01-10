@@ -21,12 +21,13 @@ func (m model) View() string {
 	title := "Sledge 🛷 - Redis TUI"
 	var kindStyle, keyStyle lipgloss.Style
 	var bodyView, top, bottom string
-	var selected Record
+
+	// title
+	titleView := styleTitle.Render(title)
 
 	for i, record := range m.records {
 		kindStyle = kindStyleMap[record.kind]
 		if i == m.cursor {
-			selected = record
 			keyStyle = styleSelected
 		} else {
 			keyStyle = styleNormal
@@ -39,14 +40,12 @@ func (m model) View() string {
 		bodyView += rowView + "\n"
 	}
 
-	titleView := styleTitle.Render(title)
 	top = titleView + "\n" + bodyView
 
 	// values
-	switch selected.kind {
+	switch m.selected.kind {
 	case "string":
-		val := selected.val.(string)
-		// bottom += runewidth.Truncate(val, maxWidth, "…")
+		val := m.selected.val.(string)
 		wrap := wordwrap.String(val, maxWidth)
 		splits := strings.Split(wrap, "\n")
 

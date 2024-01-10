@@ -175,10 +175,7 @@ func (r *Rdb) ExtractVal(ctx context.Context, key, kind string) (interface{}, er
 	return val, nil
 }
 
-// GetRecords returns a slice of Record structs.
-// Get all records in database and convert them to Record structs.
 func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) {
-
 	keys, err := r.Keys(ctx, pattern)
 	if err != nil {
 		return nil, err
@@ -192,22 +189,47 @@ func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) 
 			return nil, err
 		}
 
-		val, err := r.ExtractVal(ctx, key, kind)
-		if err != nil {
-			return nil, err
-		}
-
-		r := Record{
+		records[i] = Record{
 			key:  key,
-			val:  val,
 			kind: kind,
 		}
-
-		records[i] = r
 	}
-
 	return records, nil
 }
+
+// // GetRecords returns a slice of Record structs.
+// // Get all records in database and convert them to Record structs.
+// func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) {
+// 	logToFile("...f")
+// 	keys, err := r.Keys(ctx, pattern)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+
+// 	records := make([]Record, len(keys))
+
+// 	for i, key := range keys {
+// 		kind, err := r.Type(ctx, key)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		val, err := r.ExtractVal(ctx, key, kind)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		r := Record{
+// 			key:  key,
+// 			val:  val,
+// 			kind: kind,
+// 		}
+
+// 		records[i] = r
+// 	}
+
+// 	return records, nil
+// }
 
 func (r *Rdb) Close() error {
 	return r.client.Close()

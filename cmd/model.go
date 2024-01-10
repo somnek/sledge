@@ -23,15 +23,19 @@ type Record struct {
 	val  interface{}
 	kind string
 }
+
 type model struct {
-	table   table.Model
-	records []Record
-	cursor  int
-	url     string
+	table    table.Model
+	records  []Record
+	selected Record
+	keys     string
+	cursor   int
+	url      string
 }
 
 func initialModel(url string) model {
 	var err error
+	var cursor int
 
 	// connect
 	rdb, err := NewClient(url)
@@ -46,14 +50,22 @@ func initialModel(url string) model {
 		log.Fatal(err)
 	}
 
+	// get val for selected
+	selected := records[cursor]
+	selected.val, err = rdb.ExtractVal(ctx, selected.key, selected.kind)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	// table
-	t := recordToTable(records[0])
+	t := recordToTable(selected)
 
 	return model{
-		table:   t,
-		records: records,
-		cursor:  0,
-		url:     url,
+		table:    t,
+		records:  records,
+		selected: selected,
+		cursor:   cursor,
+		url:      url,
 	}
 }
 

@@ -38,7 +38,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursor = 0
 			}
-			m.table = recordToTable(m.records[m.cursor])
+
+			m.updateSelected()
+			m.table = recordToTable(m.selected)
 
 		case "k", "up":
 			if m.cursor > 0 {
@@ -46,9 +48,26 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 				m.cursor = len(m.records) - 1
 			}
-			m.table = recordToTable(m.records[m.cursor])
+
+			m.updateSelected()
+			m.table = recordToTable(m.selected)
 		}
 	}
 
 	return m, nil
+}
+
+func (m model) updateSelected() {
+
+	// connect
+	rdb, err := NewClient(m.url)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer rdb.Close()
+
+	m.selected.val, err = rdb.ExtractVal(ctx, m.selected.key, m.selected.kind)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
