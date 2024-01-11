@@ -3,13 +3,12 @@ package cmd
 import (
 	"log"
 
+	"github.com/charmbracelet/bubbles/table"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
-	size := len(m.records)
-
 	switch msg := msg.(type) {
 
 	// tick events
@@ -37,22 +36,15 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "G":
-			m.cursor = len(m.records) - 1
-			m.vpCur = fixedBodyHeight - 1
-			vpRec := m.records[size-fixedBodyHeight:]
-			m.body = BuildBody(vpRec, m.vpCur)
-
-			m.updateSelected(&m.selected)
-			m.table = recordToTable(m.selected)
+			m.cursor, m.vpCur = len(m.records)-1, fixedBodyHeight-1
+			vpRec := m.records[len(m.records)-fixedBodyHeight:]
+			m.body, m.table = m.updateVP(vpRec)
 
 		case "g":
-			m.cursor = 0
-			m.vpCur = 0
-			vpRec := m.records[:fixedBodyHeight]
-			m.body = BuildBody(vpRec, m.vpCur)
+			m.cursor, m.vpCur = 0, 0
 
-			m.updateSelected(&m.selected)
-			m.table = recordToTable(m.selected)
+			vpRec := m.records[:fixedBodyHeight]
+			m.body, m.table = m.updateVP(vpRec)
 
 		case "j", "down":
 			if m.cursor < len(m.records)-1 {
@@ -62,18 +54,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.vpCur++
 			}
 
-			vpRec := make([]Record, fixedBodyHeight)
-			var offsetL, offsetR int
-			if m.vpCur == fixedBodyHeight {
-				offsetL, offsetR = m.cursor, m.cursor+fixedBodyHeight
-			} else {
-				offsetL, offsetR = m.cursor-m.vpCur, m.cursor+(fixedBodyHeight-m.vpCur)
-			}
-			vpRec = m.records[offsetL:offsetR]
-
-			m.body = BuildBody(vpRec, m.vpCur)
-			m.updateSelected(&m.selected)
-			m.table = recordToTable(m.selected)
+			offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
+			vpRec := m.records[offsetL:offsetR]
+			m.body, m.table = m.updateVP(vpRec)
 
 		case "k", "up":
 			if m.cursor > 0 {
@@ -83,18 +66,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.vpCur--
 			}
 
-			vpRec := make([]Record, fixedBodyHeight)
-			var offsetL, offsetR int
-			if m.vpCur == 0 {
-				offsetL, offsetR = m.cursor, m.cursor+fixedBodyHeight
-			} else {
-				offsetL, offsetR = m.cursor-m.vpCur, m.cursor+(fixedBodyHeight-m.vpCur)
-			}
-			vpRec = m.records[offsetL:offsetR]
-
-			m.body = BuildBody(vpRec, m.vpCur)
-			m.updateSelected(&m.selected)
-			m.table = recordToTable(m.selected)
+			offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
+			vpRec := m.records[offsetL:offsetR]
+			m.body, m.table = m.updateVP(vpRec)
 		}
 	}
 
@@ -118,4 +92,21 @@ func (m model) updateSelected(selected *Record) {
 	}
 
 	*selected = newS
+}
+
+func (m model) updateVP(recs []Record) (string, table.Model) {
+	m.body = BuildBody(recs, m.vpCur)
+	m.updateSelected(&m.selected)
+	m.table = recordToTable(m.selected)
+	return m.body, m.table
+}
+
+func calculateOffsets(cur, vpCur int) (int, int) {
+	var offsetL, offsetR int
+	if vpCur == fixedBodyHeight || vpCur == 0 {
+		offsetL, offsetR = cur, cur+fixedBodyHeight
+	} else {
+		offsetL, offsetR = cur-vpCur, cur+(fixedBodyHeight-vpCur)
+	}
+	return offsetL, offsetR
 }
