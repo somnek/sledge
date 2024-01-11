@@ -64,12 +64,11 @@ func makeTable(columns []table.Column, rows []table.Row) table.Model {
 		BorderStyle(lipgloss.NormalBorder()).
 		BorderForeground(lipgloss.Color("240")).
 		BorderBottom(true).
-		Bold(false)
+		Bold(true).
+		Foreground(lipgloss.Color("81"))
 
-	s.Selected = s.Selected.
-		Foreground(lipgloss.Color("229")).
-		Background(lipgloss.Color("81")).
-		Bold(false)
+	s.Selected = s.Selected.UnsetForeground().
+		UnsetBold()
 
 	t.SetStyles(s)
 	return t
