@@ -10,7 +10,6 @@ func recordToTable(record Record) table.Model {
 	var rows []table.Row
 	var columns []table.Column
 
-	logToFile(record.kind + "\n")
 	switch record.kind {
 	case "hash":
 		pairs := record.val.([]FVPair)

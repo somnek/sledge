@@ -38,13 +38,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case "G":
 			m.cursor, m.vpCur = len(m.records)-1, fixedBodyHeight-1
 			vpRec := m.records[len(m.records)-fixedBodyHeight:]
-			m.body, m.table = m.updateVP(vpRec)
+			m.body, m.table, m.selected = m.updateVP(vpRec)
 
 		case "g":
 			m.cursor, m.vpCur = 0, 0
 
 			vpRec := m.records[:fixedBodyHeight]
-			m.body, m.table = m.updateVP(vpRec)
+			m.body, m.table, m.selected = m.updateVP(vpRec)
 
 		case "j", "down":
 			if m.cursor < len(m.records)-1 {
@@ -56,7 +56,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
 			vpRec := m.records[offsetL:offsetR]
-			m.body, m.table = m.updateVP(vpRec)
+			m.body, m.table, m.selected = m.updateVP(vpRec)
 
 		case "k", "up":
 			if m.cursor > 0 {
@@ -68,7 +68,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 			offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
 			vpRec := m.records[offsetL:offsetR]
-			m.body, m.table = m.updateVP(vpRec)
+			m.body, m.table, m.selected = m.updateVP(vpRec)
 		}
 	}
 
@@ -76,7 +76,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 // grab the value of current selected key and set m.selected.val
-func (m model) updateSelected(selected *Record) {
+func (m model) updateSelected() Record {
 
 	// connect
 	rdb, err := NewClient(m.url)
@@ -91,14 +91,14 @@ func (m model) updateSelected(selected *Record) {
 		log.Fatal(err)
 	}
 
-	*selected = newS
+	return newS
 }
 
-func (m model) updateVP(recs []Record) (string, table.Model) {
+func (m model) updateVP(recs []Record) (string, table.Model, Record) {
 	m.body = BuildBody(recs, m.vpCur)
-	m.updateSelected(&m.selected)
+	m.selected = m.updateSelected()
 	m.table = recordToTable(m.selected)
-	return m.body, m.table
+	return m.body, m.table, m.selected
 }
 
 func calculateOffsets(cur, vpCur int) (int, int) {

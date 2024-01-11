@@ -27,7 +27,6 @@ func BuildBody(records []Record, cursor int) string {
 	var kindStyle, keyStyle lipgloss.Style
 	var bodyView string
 
-	logToFile(fmt.Sprintf("record len: %d", len(records)))
 	for i, record := range records {
 		if i == cursor {
 			keyStyle = styleSelected
@@ -53,12 +52,13 @@ func (m model) View() string {
 
 	// title
 	titleView := styleTitle.Render(title)
-	// top = titleView + "\n" + BuildBody(m.records, m.cursor)
 	top = titleView + "\n" + m.body
 
+	logToFile("selected:", m.selected.key, m.selected.kind+"\n")
 	// values
 	switch m.selected.kind {
 	case "string":
+
 		val := m.selected.val.(string)
 		wrap := wordwrap.String(val, maxWidth)
 		splits := strings.Split(wrap, "\n")
