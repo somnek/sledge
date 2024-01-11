@@ -56,6 +56,9 @@ func initialModel(url string) model {
 	}
 
 	// body
+	if len(records) < fixedBodyHeight {
+		fixedBodyHeight = len(records)
+	}
 	recordsInView := records[cursor:fixedBodyHeight]
 	body = BuildBody(recordsInView, cursor)
 
