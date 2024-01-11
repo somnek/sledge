@@ -1,6 +1,8 @@
 package cmd
 
-import "github.com/charmbracelet/lipgloss"
+import (
+	"github.com/charmbracelet/lipgloss"
+)
 
 const (
 	fixedBottomHeight = 10
@@ -56,9 +58,10 @@ var (
 			Width(42).
 			PaddingLeft(2)
 	styleApp = lipgloss.NewStyle().
-			Padding(0, 1, 0, 1).
 			BorderStyle(lipgloss.RoundedBorder()).
-			BorderForeground(lipgloss.Color(palette2))
+			BorderForeground(lipgloss.Color(palette2)).
+			Padding(1, 2, 1, 2).
+			Margin(1, 2, 1, 2)
 	styleString = lipgloss.NewStyle().
 			Foreground(lipgloss.Color(slate)).
 			Background(lipgloss.Color(palette8)).

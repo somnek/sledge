@@ -54,7 +54,7 @@ func makeTable(columns []table.Column, rows []table.Row) table.Model {
 		table.WithColumns(columns),
 		table.WithRows(rows),
 		table.WithFocused(false),
-		table.WithHeight(7),
+		table.WithHeight(8),
 	)
 
 	// style

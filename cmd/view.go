@@ -59,7 +59,7 @@ func (m model) View() string {
 	case "string":
 		var sText string
 		header := styleStringHeader.Render("Value") + "\n"
-		underline := styleUnderline.Render(strings.Repeat("─", 48)) + "\n"
+		underline := styleUnderline.Render(strings.Repeat("─", 50)) + "\n"
 
 		val := m.selected.val.(string)
 		wrap := wordwrap.String(val, maxWidth)
