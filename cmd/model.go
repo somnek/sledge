@@ -27,6 +27,8 @@ type Record struct {
 type model struct {
 	table    table.Model
 	records  []Record
+	body     string
+	vpCur    int
 	selected Record
 	keys     string
 	cursor   int
@@ -34,8 +36,11 @@ type model struct {
 }
 
 func initialModel(url string) model {
-	var err error
-	var cursor int
+	var (
+		err    error
+		cursor int
+		body   string
+	)
 
 	// connect
 	rdb, err := NewClient(url)
@@ -50,6 +55,10 @@ func initialModel(url string) model {
 		log.Fatal(err)
 	}
 
+	// body
+	recordsInView := records[cursor:fixedBodyHeight]
+	body = BuildBody(recordsInView, cursor)
+
 	// get val for selected
 	selected := records[cursor]
 	selected.val, err = rdb.ExtractVal(ctx, selected.key, selected.kind)
@@ -63,6 +72,7 @@ func initialModel(url string) model {
 	return model{
 		table:    t,
 		records:  records,
+		body:     body,
 		selected: selected,
 		cursor:   cursor,
 		url:      url,

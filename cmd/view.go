@@ -17,17 +17,16 @@ var (
 	}
 )
 
-func (m model) View() string {
-	title := "Sledge 🛷 - Redis TUI"
+func BuildBody(records []Record, cursor int) string {
 	var kindStyle, keyStyle lipgloss.Style
-	var bodyView, top, bottom string
+	var bodyView string
 
-	// title
-	titleView := styleTitle.Render(title)
-
-	for i, record := range m.records {
+	logToFile(fmt.Sprintf("record len: %d", len(records)))
+	for i, record := range records {
 		kindStyle = kindStyleMap[record.kind]
-		if i == m.cursor {
+
+		logToFile(fmt.Sprintf("i & cursor: %d == %d", i, cursor))
+		if i == cursor {
 			keyStyle = styleSelected
 		} else {
 			keyStyle = styleNormal
@@ -40,7 +39,17 @@ func (m model) View() string {
 		bodyView += rowView + "\n"
 	}
 
-	top = titleView + "\n" + bodyView
+	return bodyView
+}
+
+func (m model) View() string {
+	title := "Sledge 🛷 - Redis TUI"
+	var top, bottom string
+
+	// title
+	titleView := styleTitle.Render(title)
+	// top = titleView + "\n" + BuildBody(m.records, m.cursor)
+	top = titleView + "\n" + m.body
 
 	// values
 	switch m.selected.kind {
