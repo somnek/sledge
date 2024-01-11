@@ -13,10 +13,10 @@ func recordToTable(record Record) table.Model {
 	logToFile(record.kind + "\n")
 	switch record.kind {
 	case "hash":
-		m := record.val.(map[string]string)
+		pairs := record.val.([]FVPair)
 
-		for k, v := range m {
-			rows = append(rows, table.Row{k, v})
+		for _, p := range pairs {
+			rows = append(rows, table.Row{p.field, p.value})
 		}
 
 		columns = []table.Column{

@@ -14,6 +14,11 @@ type Rdb struct {
 	client *redis.Client
 }
 
+type FVPair struct {
+	field string
+	value string
+}
+
 // Create a new redis client.
 func NewClient(url string) (*Rdb, error) {
 	opts, err := redis.ParseURL(url)
@@ -118,9 +123,9 @@ func (r *Rdb) LRange(ctx context.Context, key string) ([]string, error) {
 	return val, nil
 }
 
-// ValFromHash returns a map of field-value pairs from a hash type.
-func (r *Rdb) ValFromHash(ctx context.Context, key string) (map[string]string, error) {
-	m := make(map[string]string)
+// GetHashVal returns list of FVPair{} from hash type.
+func (r *Rdb) GetHashVal(ctx context.Context, key string) ([]FVPair, error) {
+	fvs := []FVPair{}
 
 	fields, err := r.HKeys(ctx, key)
 	if err != nil {
@@ -132,11 +137,12 @@ func (r *Rdb) ValFromHash(ctx context.Context, key string) (map[string]string, e
 		if err != nil {
 			return nil, err
 		}
-
-		m[f] = val
+		fv := FVPair{field: f, value: val}
+		fvs = append(fvs, fv)
 	}
 
-	return m, nil
+	sortFVPair(&fvs)
+	return fvs, nil
 }
 
 // ExtractVal returns the value of a key based on its type.
@@ -154,7 +160,7 @@ func (r *Rdb) ExtractVal(ctx context.Context, key, kind string) (interface{}, er
 		}
 
 	case "hash":
-		val, err = r.ValFromHash(ctx, key)
+		val, err = r.GetHashVal(ctx, key)
 		if err != nil {
 			return nil, err
 		}
@@ -196,40 +202,6 @@ func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) 
 	}
 	return records, nil
 }
-
-// // GetRecords returns a slice of Record structs.
-// // Get all records in database and convert them to Record structs.
-// func (r *Rdb) GetRecords(ctx context.Context, pattern string) ([]Record, error) {
-// 	logToFile("...f")
-// 	keys, err := r.Keys(ctx, pattern)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	records := make([]Record, len(keys))
-
-// 	for i, key := range keys {
-// 		kind, err := r.Type(ctx, key)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		val, err := r.ExtractVal(ctx, key, kind)
-// 		if err != nil {
-// 			return nil, err
-// 		}
-
-// 		r := Record{
-// 			key:  key,
-// 			val:  val,
-// 			kind: kind,
-// 		}
-
-// 		records[i] = r
-// 	}
-
-// 	return records, nil
-// }
 
 func (r *Rdb) Close() error {
 	return r.client.Close()

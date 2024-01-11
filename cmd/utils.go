@@ -4,7 +4,15 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"sort"
 )
+
+func sortFVPair(fv *[]FVPair) {
+	// todo
+	sort.Slice(*fv, func(i, j int) bool {
+		return (*fv)[i].field < (*fv)[j].field
+	})
+}
 
 func countRune(s string, r rune) int {
 	var count int
