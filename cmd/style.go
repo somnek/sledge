@@ -16,6 +16,7 @@ var (
 	void            = lipgloss.Color("#151419")
 	dust            = lipgloss.Color("#878787")
 	slate           = lipgloss.Color("#262626")
+	sophisticated   = lipgloss.Color("#abb2bf")
 	snow            = lipgloss.Color("#FBFBFB")
 	palette1        = lipgloss.Color("#E2E2DF")
 	palette2        = lipgloss.Color("#D2D2CF")
@@ -82,4 +83,15 @@ var (
 			Bold(true).
 			Width(8).
 			Align(lipgloss.Center)
+	styleStringHeader = lipgloss.NewStyle().
+				Bold(true).
+				Foreground(lipgloss.Color("81")).
+				PaddingLeft(1)
+	styleStringVal = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(sophisticated)).
+			PaddingLeft(1)
+	styleUnderline = lipgloss.NewStyle().
+			Foreground(lipgloss.Color("240"))
+	styleLava = lipgloss.NewStyle().
+			Foreground(lipgloss.Color(lava))
 )

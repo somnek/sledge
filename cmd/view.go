@@ -54,10 +54,12 @@ func (m model) View() string {
 	titleView := styleTitle.Render(title)
 	top = titleView + "\n" + m.body
 
-	logToFile("selected:", m.selected.key, m.selected.kind+"\n")
 	// values
 	switch m.selected.kind {
 	case "string":
+		var sText string
+		header := styleStringHeader.Render("Value") + "\n"
+		underline := styleUnderline.Render(strings.Repeat("─", 48)) + "\n"
 
 		val := m.selected.val.(string)
 		wrap := wordwrap.String(val, maxWidth)
@@ -65,12 +67,15 @@ func (m model) View() string {
 
 		if len(splits) > fixedBottomHeight {
 			// replace last line with ellipsis
-			splits = splits[:fixedBottomHeight-1]
-			bottom += strings.Join(splits, "\n")
-			bottom += "\n" + strings.Repeat(" ", 20) + "..."
+			splits = splits[:fixedBottomHeight-3]
+			sText += strings.Join(splits, "\n")
+			sText += "\n" + strings.Repeat(" ", 20) + "..."
 		} else {
-			bottom += strings.Join(splits, "\n")
+			sText += strings.Join(splits, "\n")
 		}
+		bottom += header
+		bottom += underline
+		bottom += styleStringVal.Render(sText)
 
 	case "hash", "list", "set":
 		bottom += m.table.View()
