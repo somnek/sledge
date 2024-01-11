@@ -9,11 +9,17 @@ import (
 )
 
 var (
-	kindStyleMap = map[string]lipgloss.Style{
+	kindStyleMapNormal = map[string]lipgloss.Style{
 		"string": styleString,
-		"list":   styleList,
 		"hash":   styleHash,
 		"set":    styleSet,
+		"list":   styleList,
+	}
+	kindStyleMapDarker = map[string]lipgloss.Style{
+		"string": styleString.Copy().Background(lipgloss.Color(palette8Darker)),
+		"hash":   styleHash.Copy().Background(lipgloss.Color(palette7Darker)),
+		"set":    styleSet.Copy().Background(lipgloss.Color(palette4Darker)),
+		"list":   styleList.Copy().Background(lipgloss.Color(palette6Darker)),
 	}
 )
 
@@ -23,13 +29,12 @@ func BuildBody(records []Record, cursor int) string {
 
 	logToFile(fmt.Sprintf("record len: %d", len(records)))
 	for i, record := range records {
-		kindStyle = kindStyleMap[record.kind]
-
-		logToFile(fmt.Sprintf("i & cursor: %d == %d", i, cursor))
 		if i == cursor {
 			keyStyle = styleSelected
+			kindStyle = kindStyleMapDarker[record.kind]
 		} else {
 			keyStyle = styleNormal
+			kindStyle = kindStyleMapNormal[record.kind]
 		}
 
 		kindView := kindStyle.Render(record.kind)
@@ -67,13 +72,7 @@ func (m model) View() string {
 			bottom += strings.Join(splits, "\n")
 		}
 
-	case "hash":
-		bottom += m.table.View()
-
-	case "list":
-		bottom += m.table.View()
-
-	case "set":
+	case "hash", "list", "set":
 		bottom += m.table.View()
 	}
 
