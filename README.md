@@ -1,1 +1,49 @@
-# Sledge 🛷
+# Sledge 🛷 Redis TUI
+
+A small, simple, minimalistic, and fast Redis TUI client written in Go.
+
+<p align="center">
+  <img src="./assets/demo.gif" width="700"/>
+</p>
+
+## Usage
+
+- Run the following command to start **Sledge**:
+
+```sh
+sledge "redis://localhost:6379"
+```
+
+- it is always better to wrap the connection string in quotes to avoid shell expansion.
+
+## Installation
+
+You can install the appropriate binary for your operating system by visiting the [Release page](https://github.com/somnek/sledge/releases/).
+
+**Note**:  
+If you're on macOS, you may need to run:
+
+```sh
+xattr -c ./sledge\ Darwin x86\ 64.tar.gz
+```
+
+to (to avoid "unknown developer" warning)
+
+## Controls
+
+| Key        | Description |
+| ---------- | ----------- |
+| `j`        | Down        |
+| `k`        | Up          |
+| `g`        | To Top      |
+| `G`        | To Bottom   |
+| `Ctrl + C` | Quit        |
+
+## Features
+
+Currently, **Sledge** supports the following types:
+
+- String
+- List
+- Set
+- Hash
