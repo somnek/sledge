@@ -23,7 +23,7 @@ You can install the appropriate binary for your operating system by visiting the
 If you're on macOS, you may need to run:
 
 ```sh
-xattr -c ./Sledge\ Darwin\ x86\ .gz
+xattr -c ./Sledge\ v0.1.1\ Darwin\ x86_64.tar.gz
 ```
 
 to (to avoid "unknown developer" warning)
