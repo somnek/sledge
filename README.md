@@ -1,4 +1,4 @@
-# Sledge 🛷 Redis TUI
+# Sledge 🛷
 
 A small, simple, minimalistic, and fast Redis TUI client written in Go.
 
