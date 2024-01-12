@@ -8,13 +8,12 @@ A small, simple, minimalistic, and fast Redis TUI client written in Go.
 
 ## Usage
 
-- Run the following command to start **Sledge**:
+- It is always good to wrap the connection string in quotes to avoid shell expansion.
+- Example below shows how to connect to a local Redis server:
 
 ```sh
 sledge "redis://localhost:6379"
 ```
-
-- it is always better to wrap the connection string in quotes to avoid shell expansion.
 
 ## Installation
 
@@ -24,7 +23,7 @@ You can install the appropriate binary for your operating system by visiting the
 If you're on macOS, you may need to run:
 
 ```sh
-xattr -c ./sledge\ Darwin x86\ 64.tar.gz
+xattr -c ./Sledge\ Darwin x86\ 64.tar.gz
 ```
 
 to (to avoid "unknown developer" warning)
