@@ -5,12 +5,12 @@ import (
 )
 
 const (
-	fixedBottomHeight = 10
+	fixedBottomHeight = 8
 	maxWidth          = 48
 )
 
 var (
-	fixedBodyHeight = 10
+	fixedBodyHeight = 8
 )
 
 var (
