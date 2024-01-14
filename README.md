@@ -8,12 +8,12 @@ A small, simple, minimalistic, and fast Redis TUI client written in Go.
 
 ## Usage
 
-- Example below shows how to connect to a local Redis server:
+- Connect to a local Redis server:
 
 ```sh
 sledge "redis://localhost:6379"
 ```
-- It is always a good idea to wrap the connection string in quotes to avoid shell expansion.
+- It's always a good idea to wrap the connection string in quotes to avoid shell expansion.
 
 
 ## Installation
