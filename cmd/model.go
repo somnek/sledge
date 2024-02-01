@@ -57,10 +57,10 @@ func initialModel(url string) model {
 
 	// body
 	if len(records) < fixedBodyHeight {
-		fixedBodyHeight = len(records)
+		currentBodyHeight = len(records)
 	}
-	recordsInView := records[cursor:fixedBodyHeight]
-	body = BuildBody(recordsInView, cursor)
+	vpRec := records[cursor:currentBodyHeight]
+	body = BuildBody(vpRec, cursor)
 
 	// get val for selected
 	selected := records[cursor]

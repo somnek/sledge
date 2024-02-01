@@ -24,7 +24,7 @@ func countRune(s string, r rune) int {
 	return count
 }
 
-func logToFile(s ...string) {
+func logToFile(s ...any) {
 	f, err := os.OpenFile("debug.log", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0o600)
 	if err != nil {
 		fmt.Println("error opening file for logging:", err)

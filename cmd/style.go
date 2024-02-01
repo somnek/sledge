@@ -10,7 +10,8 @@ const (
 )
 
 var (
-	fixedBodyHeight = 8
+	fixedBodyHeight   = 8
+	currentBodyHeight = 8
 )
 
 var (

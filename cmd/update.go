@@ -9,6 +9,7 @@ import (
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
+
 	switch msg := msg.(type) {
 
 	// tick events
@@ -26,6 +27,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			log.Fatal(err)
 		}
 
+		// update vp items
+		if len(m.records) <= fixedBodyHeight {
+			vpRec := m.records
+			currentBodyHeight = len(m.records)
+			m.body, m.table, m.selected = m.updateVP(vpRec)
+		}
 		return m, doTick()
 
 	// key events
@@ -37,25 +44,41 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 		case "G":
 			m.cursor, m.vpCur = len(m.records)-1, fixedBodyHeight-1
-			vpRec := m.records[len(m.records)-fixedBodyHeight:]
+
+			// handle item less than minHeight
+			if len(m.records) < fixedBodyHeight {
+				currentBodyHeight = len(m.records)
+			}
+
+			vpRec := m.records[len(m.records)-currentBodyHeight:]
 			m.body, m.table, m.selected = m.updateVP(vpRec)
 
 		case "g":
 			m.cursor, m.vpCur = 0, 0
 
-			vpRec := m.records[:fixedBodyHeight]
+			// handle item less than minHeight
+			if len(m.records) < fixedBodyHeight {
+				currentBodyHeight = len(m.records)
+			}
+			vpRec := m.records[:currentBodyHeight]
 			m.body, m.table, m.selected = m.updateVP(vpRec)
 
 		case "j", "down":
 			if m.cursor < len(m.records)-1 {
 				m.cursor++
 			}
-			if m.vpCur < fixedBodyHeight-1 {
+			if m.vpCur < currentBodyHeight-1 {
 				m.vpCur++
 			}
 
-			offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
-			vpRec := m.records[offsetL:offsetR]
+			var vpRec []Record
+			// handle item less than minHeight
+			if len(m.records) <= fixedBodyHeight {
+				vpRec = m.records
+			} else {
+				offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
+				vpRec = m.records[offsetL:offsetR]
+			}
 			m.body, m.table, m.selected = m.updateVP(vpRec)
 
 		case "k", "up":
@@ -66,8 +89,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				m.vpCur--
 			}
 
-			offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
-			vpRec := m.records[offsetL:offsetR]
+			var vpRec []Record
+			// handle item less than minHeight
+			if len(m.records) <= fixedBodyHeight {
+				vpRec = m.records
+			} else {
+				offsetL, offsetR := calculateOffsets(m.cursor, m.vpCur)
+				vpRec = m.records[offsetL:offsetR]
+			}
 			m.body, m.table, m.selected = m.updateVP(vpRec)
 		}
 	}
@@ -103,10 +132,10 @@ func (m model) updateVP(recs []Record) (string, table.Model, Record) {
 
 func calculateOffsets(cur, vpCur int) (int, int) {
 	var offsetL, offsetR int
-	if vpCur == fixedBodyHeight || vpCur == 0 {
-		offsetL, offsetR = cur, cur+fixedBodyHeight
+	if vpCur == currentBodyHeight || vpCur == 0 {
+		offsetL, offsetR = cur, cur+currentBodyHeight
 	} else {
-		offsetL, offsetR = cur-vpCur, cur+(fixedBodyHeight-vpCur)
+		offsetL, offsetR = cur-vpCur, cur+(currentBodyHeight-vpCur)
 	}
 	return offsetL, offsetR
 }
