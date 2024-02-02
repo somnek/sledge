@@ -7,6 +7,11 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
+func (m *model) updateMinimumView() {
+	vpRec := m.records
+	currentBodyHeight = len(m.records)
+	m.body, m.table, m.selected = m.updateVP(vpRec)
+}
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -32,16 +37,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if m.cursor >= len(m.records) {
 			m.cursor = len(m.records) - 1
 			m.vpCur = len(m.records) - 1
-			vpRec := m.records
-			currentBodyHeight = len(m.records)
-			m.body, m.table, m.selected = m.updateVP(vpRec)
+			m.updateMinimumView()
 		}
 
 		// handle item less than minHeight (new item etc)
 		if len(m.records) <= fixedBodyHeight {
-			vpRec := m.records
-			currentBodyHeight = len(m.records)
-			m.body, m.table, m.selected = m.updateVP(vpRec)
+			m.updateMinimumView()
 		}
 
 		return m, doTick()
@@ -54,7 +55,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 
 		case "G":
-			m.cursor, m.vpCur = len(m.records)-1, fixedBodyHeight-1
+			m.cursor, m.vpCur = len(m.records)-1, currentBodyHeight-1
 
 			// handle item less than minHeight
 			if len(m.records) < fixedBodyHeight {
