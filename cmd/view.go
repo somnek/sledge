@@ -50,7 +50,7 @@ func (m model) View() string {
 	title := "Sledge 🛷 - Redis TUI"
 	var top, bottom string
 
-	// title
+	// title + body
 	titleView := styleTitle.Render(title)
 	top = titleView + "\n" + m.body
 

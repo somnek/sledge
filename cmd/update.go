@@ -27,12 +27,23 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			log.Fatal(err)
 		}
 
-		// update vp items
+		// update vp items, reflect update from external actions
+		// if deleted item is under cursor, assign cursor to the last item
+		if m.cursor >= len(m.records) {
+			m.cursor = len(m.records) - 1
+			m.vpCur = len(m.records) - 1
+			vpRec := m.records
+			currentBodyHeight = len(m.records)
+			m.body, m.table, m.selected = m.updateVP(vpRec)
+		}
+
+		// handle item less than minHeight (new item etc)
 		if len(m.records) <= fixedBodyHeight {
 			vpRec := m.records
 			currentBodyHeight = len(m.records)
 			m.body, m.table, m.selected = m.updateVP(vpRec)
 		}
+
 		return m, doTick()
 
 	// key events
