@@ -7,11 +7,6 @@ import (
 	tea "github.com/charmbracelet/bubbletea"
 )
 
-func (m *model) updateMinimumView() {
-	vpRec := m.records
-	currentBodyHeight = len(m.records)
-	m.body, m.table, m.selected = m.updateVP(vpRec)
-}
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
@@ -150,4 +145,10 @@ func calculateOffsets(cur, vpCur int) (int, int) {
 		offsetL, offsetR = cur-vpCur, cur+(currentBodyHeight-vpCur)
 	}
 	return offsetL, offsetR
+}
+
+func (m *model) updateMinimumView() {
+	vpRec := m.records
+	currentBodyHeight = len(m.records)
+	m.body, m.table, m.selected = m.updateVP(vpRec)
 }

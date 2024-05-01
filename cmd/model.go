@@ -1,7 +1,9 @@
 package cmd
 
 import (
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -51,6 +53,10 @@ func initialModel(url string) model {
 
 	// records
 	records, err := rdb.GetRecords(ctx, "*")
+	if len(records) == 0 {
+		fmt.Println("the database is empty, please insert some data first!")
+		os.Exit(0)
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
