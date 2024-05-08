@@ -121,6 +121,12 @@ func (m model) updateSelected() Record {
 	}
 	defer rdb.Close()
 
+	// handle 0 records
+	if len(m.records) == 0 {
+		// TODO: handle this properly
+		return Record{}
+	}
+
 	newS := m.records[m.cursor]
 	newS.val, err = rdb.ExtractVal(ctx, newS.key, newS.kind)
 	if err != nil {

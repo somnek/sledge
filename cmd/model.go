@@ -3,7 +3,6 @@ package cmd
 import (
 	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"github.com/charmbracelet/bubbles/table"
@@ -44,6 +43,9 @@ func initialModel(url string) model {
 		body   string
 	)
 
+	t := table.Model{}
+	selected := Record{}
+
 	// connect
 	rdb, err := NewClient(url)
 	if err != nil {
@@ -53,30 +55,34 @@ func initialModel(url string) model {
 
 	// records
 	records, err := rdb.GetRecords(ctx, "*")
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	if len(records) == 0 {
+		// handle 0 records
 		fmt.Println("the database is empty, please insert some data first!")
-		os.Exit(0)
-	}
-	if err != nil {
-		log.Fatal(err)
-	}
+		records = []Record{}
+	} else {
+		// handle records > 0
 
-	// body
-	if len(records) < fixedBodyHeight {
-		currentBodyHeight = len(records)
-	}
-	vpRec := records[cursor:currentBodyHeight]
-	body = BuildBody(vpRec, cursor)
+		// body
+		if len(records) < fixedBodyHeight {
+			currentBodyHeight = len(records)
+		}
+		vpRec := records[cursor:currentBodyHeight]
+		body = BuildBody(vpRec, cursor)
 
-	// get val for selected
-	selected := records[cursor]
-	selected.val, err = rdb.ExtractVal(ctx, selected.key, selected.kind)
-	if err != nil {
-		log.Fatal(err)
-	}
+		// get val for selected
+		selected = records[cursor]
+		selected.val, err = rdb.ExtractVal(ctx, selected.key, selected.kind)
+		if err != nil {
+			log.Fatal(err)
+		}
 
-	// table
-	t := recordToTable(selected)
+		// table
+		t = recordToTable(selected)
+	}
 
 	return model{
 		table:    t,
